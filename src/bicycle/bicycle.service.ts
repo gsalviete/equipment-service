@@ -4,7 +4,7 @@ import {
   BadRequestException,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { In, Repository } from 'typeorm';
 import { Bicycle, BicycleStatus } from './bicycle.entity';
 import { CreateBicycleDto } from './dto/create-bicycle.dto';
 import { UpdateBicycleDto } from './dto/update-bicycle.dto';
@@ -63,5 +63,10 @@ export class BicycleService {
       order: { number: 'DESC' },
     });
     return lastBicycle ? lastBicycle.number + 1 : 1;
+  }
+
+  async findByIds(ids: number[]): Promise<Bicycle[]> {
+    if (ids.length === 0) return [];
+    return this.repo.findBy({ id: In(ids) });
   }
 }

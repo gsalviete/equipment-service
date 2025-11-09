@@ -8,5 +8,6 @@ import { BicycleController } from './bicycle.controller';
   imports: [TypeOrmModule.forFeature([Bicycle])],
   controllers: [BicycleController],
   providers: [BicycleService],
+  exports: [BicycleService], // <-- adicione
 })
 export class BicycleModule {}

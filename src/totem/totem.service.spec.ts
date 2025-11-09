@@ -1,132 +1,140 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { getRepositoryToken } from '@nestjs/typeorm';
+import { TotemController } from './totem.controller';
 import { TotemService } from './totem.service';
-import { Totem } from './totem.entity';
-import { NotFoundException } from '@nestjs/common';
+import { LockService } from '../lock/lock.service';
+import { BicycleService } from '../bicycle/bicycle.service';
 
-describe('TotemService', () => {
-  let service: TotemService;
+describe('TotemController', () => {
+  let controller: TotemController;
 
-  const mockRepo = {
+  const mockService = {
     create: jest.fn(),
-    save: jest.fn(),
-    find: jest.fn(),
-    findOneBy: jest.fn(),
+    findAll: jest.fn(),
+    findOne: jest.fn(),
+    update: jest.fn(),
     remove: jest.fn(),
+  };
+
+  const mockLockService = {
+    findByTotemId: jest.fn(),
+  };
+
+  const mockBicycleService = {
+    findByIds: jest.fn(),
   };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
+      controllers: [TotemController],
       providers: [
-        TotemService,
         {
-          provide: getRepositoryToken(Totem),
-          useValue: mockRepo,
+          provide: TotemService,
+          useValue: mockService,
+        },
+        {
+          provide: LockService,
+          useValue: mockLockService,
+        },
+        {
+          provide: BicycleService,
+          useValue: mockBicycleService,
         },
       ],
     }).compile();
 
-    service = module.get<TotemService>(TotemService);
+    controller = module.get<TotemController>(TotemController);
 
     jest.clearAllMocks();
   });
 
-  describe('create', () => {
-    it('should create totem', async () => {
-      const dto = {
-        location: '-22.9068,-43.1729',
-        description: 'Main Station',
-      };
+  it('should create totem', async () => {
+    const dto = { location: '-22.9068,-43.1729', description: 'Main Station' };
+    const expected = { id: 1, ...dto };
 
-      mockRepo.create.mockReturnValue(dto);
-      mockRepo.save.mockResolvedValue({ id: 1, ...dto });
+    mockService.create.mockResolvedValue(expected);
 
-      const result = await service.create(dto);
+    const result = await controller.create(dto);
 
-      expect(result.id).toBe(1);
-      expect(result.location).toBe(dto.location);
-    });
+    expect(mockService.create).toHaveBeenCalledWith(dto);
+    expect(result).toEqual(expected);
   });
 
-  describe('findAll', () => {
-    it('should return array of totems', async () => {
-      const totems = [
-        { id: 1, location: '-22.9068,-43.1729', description: 'Main Station' },
-      ];
-      mockRepo.find.mockResolvedValue(totems);
+  it('should find all totems', async () => {
+    const expected = [
+      { id: 1, location: '-22.9068,-43.1729', description: 'Main Station' },
+    ];
+    mockService.findAll.mockResolvedValue(expected);
 
-      const result = await service.findAll();
+    const result = await controller.findAll();
 
-      expect(result).toEqual(totems);
-    });
+    expect(result).toEqual(expected);
   });
 
-  describe('findOne', () => {
-    it('should return totem if found', async () => {
-      const totem = {
-        id: 1,
-        location: '-22.9068,-43.1729',
-        description: 'Main Station',
-      };
-      mockRepo.findOneBy.mockResolvedValue(totem);
+  it('should find one totem', async () => {
+    const expected = {
+      id: 1,
+      location: '-22.9068,-43.1729',
+      description: 'Main Station',
+    };
+    mockService.findOne.mockResolvedValue(expected);
 
-      const result = await service.findOne(1);
+    const result = await controller.findOne('1');
 
-      expect(result).toEqual(totem);
-    });
-
-    it('should throw NotFoundException if not found', async () => {
-      mockRepo.findOneBy.mockResolvedValue(null);
-
-      await expect(service.findOne(999)).rejects.toThrow(NotFoundException);
-    });
+    expect(mockService.findOne).toHaveBeenCalledWith(1);
+    expect(result).toEqual(expected);
   });
 
-  describe('update', () => {
-    it('should update totem', async () => {
-      const totem = {
-        id: 1,
-        location: '-22.9068,-43.1729',
-        description: 'Main Station',
-      };
-      const dto = { description: 'Updated Station' };
+  it('should update totem', async () => {
+    const dto = { description: 'Updated Station' };
+    const expected = {
+      id: 1,
+      location: '-22.9068,-43.1729',
+      description: 'Updated Station',
+    };
+    mockService.update.mockResolvedValue(expected);
 
-      mockRepo.findOneBy.mockResolvedValue(totem);
-      mockRepo.save.mockResolvedValue({ ...totem, ...dto });
+    const result = await controller.update('1', dto);
 
-      const result = await service.update(1, dto);
-
-      expect(result.description).toBe('Updated Station');
-    });
-
-    it('should throw NotFoundException if totem not found', async () => {
-      mockRepo.findOneBy.mockResolvedValue(null);
-
-      await expect(
-        service.update(999, { description: 'Test' }),
-      ).rejects.toThrow(NotFoundException);
-    });
+    expect(mockService.update).toHaveBeenCalledWith(1, dto);
+    expect(result).toEqual(expected);
   });
 
-  describe('remove', () => {
-    it('should remove totem', async () => {
-      const totem = {
-        id: 1,
-        location: '-22.9068,-43.1729',
-        description: 'Main Station',
-      };
-      mockRepo.findOneBy.mockResolvedValue(totem);
-      mockRepo.remove.mockResolvedValue(totem);
+  it('should remove totem', async () => {
+    mockService.remove.mockResolvedValue(undefined);
 
-      await service.remove(1);
+    await controller.remove('1');
 
-      expect(mockRepo.remove).toHaveBeenCalledWith(totem);
-    });
+    expect(mockService.remove).toHaveBeenCalledWith(1);
+  });
 
-    it('should throw NotFoundException if totem not found', async () => {
-      mockRepo.findOneBy.mockResolvedValue(null);
+  it('should get locks from totem', async () => {
+    const locks = [{ id: 1, totemId: 1 }];
+    mockService.findOne.mockResolvedValue({ id: 1 });
+    mockLockService.findByTotemId.mockResolvedValue(locks);
 
-      await expect(service.remove(999)).rejects.toThrow(NotFoundException);
-    });
+    const result = await controller.getLocksFromTotem('1');
+
+    expect(mockService.findOne).toHaveBeenCalledWith(1);
+    expect(mockLockService.findByTotemId).toHaveBeenCalledWith(1);
+    expect(result).toEqual(locks);
+  });
+
+  it('should get bicycles from totem', async () => {
+    const locks = [
+      { id: 1, bicycleId: 5 },
+      { id: 2, bicycleId: null },
+    ];
+    const bicycles = [{ id: 5 }];
+
+    mockService.findOne.mockResolvedValue({ id: 1 });
+    mockLockService.findByTotemId.mockResolvedValue(locks);
+    mockBicycleService.findByIds.mockResolvedValue(bicycles);
+
+    const result = await controller.getBicyclesFromTotem('1');
+
+    expect(mockService.findOne).toHaveBeenCalledWith(1);
+    expect(mockLockService.findByTotemId).toHaveBeenCalledWith(1);
+    expect(mockBicycleService.findByIds).toHaveBeenCalledWith([5]);
+    expect(result).toEqual(bicycles);
   });
 });

@@ -1,4 +1,11 @@
-import { Entity, PrimaryGeneratedColumn, Column } from 'typeorm';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { Totem } from '../totem/totem.entity';
 
 export enum LockStatus {
   FREE = 'LIVRE',
@@ -32,6 +39,13 @@ export class Lock {
   })
   status: LockStatus;
 
-  @Column({ nullable: true })
+  @Column({ nullable: true, type: 'int' })
   bicycleId: number | null;
+
+  @ManyToOne(() => Totem, { nullable: true })
+  @JoinColumn({ name: 'totemId' })
+  totem: Totem | null;
+
+  @Column({ nullable: true, type: 'int' })
+  totemId: number | null;
 }

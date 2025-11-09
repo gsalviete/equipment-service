@@ -8,5 +8,6 @@ import { LockController } from './lock.controller';
   imports: [TypeOrmModule.forFeature([Lock])],
   controllers: [LockController],
   providers: [LockService],
+  exports: [LockService], // <-- adicione
 })
 export class LockModule {}
