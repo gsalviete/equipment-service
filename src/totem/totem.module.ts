@@ -10,7 +10,7 @@ import { BicycleModule } from '../bicycle/bicycle.module';
   imports: [
     TypeOrmModule.forFeature([Totem]),
     forwardRef(() => LockModule),
-    BicycleModule,
+    forwardRef(() => BicycleModule),
   ],
   controllers: [TotemController],
   providers: [TotemService],
