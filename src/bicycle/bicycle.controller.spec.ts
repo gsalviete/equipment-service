@@ -53,4 +53,43 @@ describe('BicycleController', () => {
 
     expect(result).toEqual(expected);
   });
+
+  it('should find one bicycle', async () => {
+    const expected = { id: 1, brand: 'Caloi', model: 'Elite', year: '2023', number: 1, status: BicycleStatus.NEW };
+    mockService.findOne.mockResolvedValue(expected);
+
+    const result = await controller.findOne('1');
+
+    expect(service.findOne).toHaveBeenCalledWith(1);
+    expect(result).toEqual(expected);
+  });
+
+  it('should update bicycle', async () => {
+    const dto = { brand: 'Specialized' };
+    const expected = { id: 1, brand: 'Specialized', model: 'Elite', year: '2023', number: 1, status: BicycleStatus.NEW };
+    mockService.update.mockResolvedValue(expected);
+
+    const result = await controller.update('1', dto);
+
+    expect(service.update).toHaveBeenCalledWith(1, dto);
+    expect(result).toEqual(expected);
+  });
+
+  it('should remove bicycle', async () => {
+    mockService.remove.mockResolvedValue(undefined);
+
+    await controller.remove('1');
+
+    expect(service.remove).toHaveBeenCalledWith(1);
+  });
+
+  it('should update bicycle status', async () => {
+    const expected = { id: 1, status: BicycleStatus.AVAILABLE };
+    mockService.updateStatus.mockResolvedValue(expected);
+
+    const result = await controller.updateStatus('1', 'DISPONIVEL');
+
+    expect(service.updateStatus).toHaveBeenCalledWith(1, BicycleStatus.AVAILABLE);
+    expect(result).toEqual(expected);
+  });
 });

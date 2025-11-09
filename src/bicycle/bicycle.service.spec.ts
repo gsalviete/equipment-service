@@ -50,6 +50,19 @@ describe('BicycleService', () => {
     });
   });
 
+  describe('findAll', () => {
+    it('should return array of bicycles', async () => {
+      const bicycles = [
+        { id: 1, brand: 'Caloi', model: 'Elite', year: '2023', number: 1, status: BicycleStatus.NEW },
+      ];
+      mockRepo.find.mockResolvedValue(bicycles);
+
+      const result = await service.findAll();
+
+      expect(result).toEqual(bicycles);
+    });
+  });
+
   describe('findOne', () => {
     it('should return bicycle if found', async () => {
       const bicycle = { id: 1, brand: 'Caloi', model: 'Elite', year: '2023', number: 1, status: BicycleStatus.NEW };
@@ -64,6 +77,26 @@ describe('BicycleService', () => {
       mockRepo.findOneBy.mockResolvedValue(null);
 
       await expect(service.findOne(999)).rejects.toThrow(NotFoundException);
+    });
+  });
+
+  describe('update', () => {
+    it('should update bicycle', async () => {
+      const bicycle = { id: 1, brand: 'Caloi', model: 'Elite', year: '2023', number: 1, status: BicycleStatus.NEW };
+      const dto = { brand: 'Specialized' };
+      
+      mockRepo.findOneBy.mockResolvedValue(bicycle);
+      mockRepo.save.mockResolvedValue({ ...bicycle, ...dto });
+
+      const result = await service.update(1, dto);
+
+      expect(result.brand).toBe('Specialized');
+    });
+
+    it('should throw NotFoundException if bicycle not found', async () => {
+      mockRepo.findOneBy.mockResolvedValue(null);
+
+      await expect(service.update(999, { brand: 'Test' })).rejects.toThrow(NotFoundException);
     });
   });
 
@@ -83,6 +116,18 @@ describe('BicycleService', () => {
       await service.remove(1);
 
       expect(mockRepo.remove).toHaveBeenCalledWith(bicycle);
+    });
+  });
+
+  describe('updateStatus', () => {
+    it('should update bicycle status', async () => {
+      const bicycle = { id: 1, status: BicycleStatus.NEW };
+      mockRepo.findOneBy.mockResolvedValue(bicycle);
+      mockRepo.save.mockResolvedValue({ ...bicycle, status: BicycleStatus.AVAILABLE });
+
+      const result = await service.updateStatus(1, BicycleStatus.AVAILABLE);
+
+      expect(result.status).toBe(BicycleStatus.AVAILABLE);
     });
   });
 });
