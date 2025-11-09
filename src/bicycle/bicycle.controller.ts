@@ -9,13 +9,17 @@ import {
   HttpCode,
 } from '@nestjs/common';
 import { BicycleService } from './bicycle.service';
+import { BicycleNetworkService } from './bicycle-network.service';
 import { CreateBicycleDto } from './dto/create-bicycle.dto';
 import { UpdateBicycleDto } from './dto/update-bicycle.dto';
 import { BicycleStatus } from './bicycle.entity';
 
 @Controller('bicicleta')
 export class BicycleController {
-  constructor(private readonly service: BicycleService) {}
+  constructor(
+    private readonly service: BicycleService,
+    private readonly networkService: BicycleNetworkService,
+  ) {}
 
   @Post()
   create(@Body() dto: CreateBicycleDto) {
@@ -54,5 +58,41 @@ export class BicycleController {
       EM_REPARO: BicycleStatus.IN_REPAIR,
     };
     return this.service.updateStatus(+id, statusMap[action]);
+  }
+
+  @Post('integrarNaRede')
+  @HttpCode(200)
+  integrateBicycle(
+    @Body()
+    body: {
+      idTranca: number;
+      idBicicleta: number;
+      idFuncionario: number;
+    },
+  ) {
+    return this.networkService.integrateBicycle(
+      body.idBicicleta,
+      body.idTranca,
+      body.idFuncionario,
+    );
+  }
+
+  @Post('retirarDaRede')
+  @HttpCode(200)
+  removeBicycle(
+    @Body()
+    body: {
+      idTranca: number;
+      idBicicleta: number;
+      idFuncionario: number;
+      statusAcaoReparador: string;
+    },
+  ) {
+    return this.networkService.removeBicycle(
+      body.idBicicleta,
+      body.idTranca,
+      body.idFuncionario,
+      body.statusAcaoReparador,
+    );
   }
 }

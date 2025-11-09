@@ -50,7 +50,7 @@ describe('TotemController', () => {
   it('should create totem', async () => {
     const dto = { location: '-22.9068,-43.1729', description: 'Main Station' };
     const expected = { id: 1, ...dto };
-    
+
     mockService.create.mockResolvedValue(expected);
 
     const result = await controller.create(dto);
@@ -60,7 +60,9 @@ describe('TotemController', () => {
   });
 
   it('should find all totems', async () => {
-    const expected = [{ id: 1, location: '-22.9068,-43.1729', description: 'Main Station' }];
+    const expected = [
+      { id: 1, location: '-22.9068,-43.1729', description: 'Main Station' },
+    ];
     mockService.findAll.mockResolvedValue(expected);
 
     const result = await controller.findAll();
@@ -69,7 +71,11 @@ describe('TotemController', () => {
   });
 
   it('should find one totem', async () => {
-    const expected = { id: 1, location: '-22.9068,-43.1729', description: 'Main Station' };
+    const expected = {
+      id: 1,
+      location: '-22.9068,-43.1729',
+      description: 'Main Station',
+    };
     mockService.findOne.mockResolvedValue(expected);
 
     const result = await controller.findOne('1');
@@ -80,7 +86,11 @@ describe('TotemController', () => {
 
   it('should update totem', async () => {
     const dto = { description: 'Updated Station' };
-    const expected = { id: 1, location: '-22.9068,-43.1729', description: 'Updated Station' };
+    const expected = {
+      id: 1,
+      location: '-22.9068,-43.1729',
+      description: 'Updated Station',
+    };
     mockService.update.mockResolvedValue(expected);
 
     const result = await controller.update('1', dto);
@@ -110,9 +120,12 @@ describe('TotemController', () => {
   });
 
   it('should get bicycles from totem', async () => {
-    const locks = [{ id: 1, bicycleId: 5 }, { id: 2, bicycleId: null }];
+    const locks = [
+      { id: 1, bicycleId: 5 },
+      { id: 2, bicycleId: null },
+    ];
     const bicycles = [{ id: 5 }];
-    
+
     mockService.findOne.mockResolvedValue({ id: 1 });
     mockLockService.findByTotemId.mockResolvedValue(locks);
     mockBicycleService.findByIds.mockResolvedValue(bicycles);
