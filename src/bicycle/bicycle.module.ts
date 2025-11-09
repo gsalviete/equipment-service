@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Bicycle } from './bicycle.entity';
 import { BicycleService } from './bicycle.service';
@@ -7,9 +7,9 @@ import { BicycleNetworkService } from './bicycle-network.service';
 import { LockModule } from '../lock/lock.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Bicycle]), LockModule],
+  imports: [TypeOrmModule.forFeature([Bicycle]), forwardRef(() => LockModule) ],
   controllers: [BicycleController],
   providers: [BicycleService, BicycleNetworkService],
-  exports: [BicycleService],
+  exports: [BicycleService, BicycleNetworkService],
 })
 export class BicycleModule {}
