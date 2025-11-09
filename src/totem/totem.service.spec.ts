@@ -7,7 +7,7 @@ import { UpdateTotemDto } from './dto/update-totem.dto';
 import { TotemService } from './totem.service';
 
 describe('TotemService', () => {
-  let service: TotemService; 
+  let service: TotemService;
   const mockTotem = {
     id: 1,
     location: '-22.9068,-43.1729',
