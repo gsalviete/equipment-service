@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  HttpCode,
+} from '@nestjs/common';
 import { LockService } from './lock.service';
 import { CreateLockDto } from './dto/create-lock.dto';
 import { UpdateLockDto } from './dto/update-lock.dto';
@@ -36,14 +45,14 @@ export class LockController {
 
   @Post(':id/status/:action')
   updateStatus(@Param('id') id: string, @Param('action') action: string) {
-    const statusMap = {
-      LIVRE: LockStatus.FREE,
-      OCUPADA: LockStatus.OCCUPIED,
-      NOVA: LockStatus.NEW,
-      APOSENTADA: LockStatus.RETIRED,
-      EM_REPARO: LockStatus.IN_REPAIR,
+    const actionToStatusMap: Record<string, LockStatus> = {
+      DESTRANCAR: LockStatus.FREE,
+      TRANCAR: LockStatus.OCCUPIED,
     };
-    return this.service.updateStatus(+id, statusMap[action]);
+    return this.service.updateStatus(
+      +id,
+      actionToStatusMap[action.toUpperCase()],
+    );
   }
 
   @Post(':id/trancar')

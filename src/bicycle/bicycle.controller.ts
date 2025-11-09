@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  HttpCode,
+} from '@nestjs/common';
 import { BicycleService } from './bicycle.service';
 import { CreateBicycleDto } from './dto/create-bicycle.dto';
 import { UpdateBicycleDto } from './dto/update-bicycle.dto';
@@ -36,7 +45,7 @@ export class BicycleController {
 
   @Post(':id/status/:action')
   updateStatus(@Param('id') id: string, @Param('action') action: string) {
-    const statusMap = {
+    const statusMap: Record<string, BicycleStatus> = {
       DISPONIVEL: BicycleStatus.AVAILABLE,
       EM_USO: BicycleStatus.IN_USE,
       NOVA: BicycleStatus.NEW,

@@ -1,4 +1,13 @@
-import { Controller, Get, Post, Put, Delete, Body, Param, HttpCode } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Put,
+  Delete,
+  Body,
+  Param,
+  HttpCode,
+} from '@nestjs/common';
 import { TotemService } from './totem.service';
 import { CreateTotemDto } from './dto/create-totem.dto';
 import { UpdateTotemDto } from './dto/update-totem.dto';

@@ -1,13 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { LockService } from './lock.service';
 import { Lock, LockStatus } from './lock.entity';
 import { NotFoundException, BadRequestException } from '@nestjs/common';
 
 describe('LockService', () => {
   let service: LockService;
-  let repo: Repository<Lock>;
 
   const mockRepo = {
     create: jest.fn(),
@@ -30,18 +28,30 @@ describe('LockService', () => {
     }).compile();
 
     service = module.get<LockService>(LockService);
-    repo = module.get<Repository<Lock>>(getRepositoryToken(Lock));
 
     jest.clearAllMocks();
   });
 
   describe('create', () => {
     it('should create lock with status NEW and generated number', async () => {
-      const dto = { location: '-22.9068,-43.1729', manufactureYear: '2023', model: 'Model X' };
-      
+      const dto = {
+        location: '-22.9068,-43.1729',
+        manufactureYear: '2023',
+        model: 'Model X',
+      };
+
       mockRepo.findOne.mockResolvedValue(null);
-      mockRepo.create.mockReturnValue({ ...dto, number: 1, status: LockStatus.NEW });
-      mockRepo.save.mockResolvedValue({ id: 1, ...dto, number: 1, status: LockStatus.NEW });
+      mockRepo.create.mockReturnValue({
+        ...dto,
+        number: 1,
+        status: LockStatus.NEW,
+      });
+      mockRepo.save.mockResolvedValue({
+        id: 1,
+        ...dto,
+        number: 1,
+        status: LockStatus.NEW,
+      });
 
       const result = await service.create(dto);
 
@@ -53,7 +63,14 @@ describe('LockService', () => {
   describe('findAll', () => {
     it('should return array of locks', async () => {
       const locks = [
-        { id: 1, location: '-22.9068,-43.1729', manufactureYear: '2023', model: 'Model X', number: 1, status: LockStatus.NEW },
+        {
+          id: 1,
+          location: '-22.9068,-43.1729',
+          manufactureYear: '2023',
+          model: 'Model X',
+          number: 1,
+          status: LockStatus.NEW,
+        },
       ];
       mockRepo.find.mockResolvedValue(locks);
 
@@ -65,7 +82,14 @@ describe('LockService', () => {
 
   describe('findOne', () => {
     it('should return lock if found', async () => {
-      const lock = { id: 1, location: '-22.9068,-43.1729', manufactureYear: '2023', model: 'Model X', number: 1, status: LockStatus.NEW };
+      const lock = {
+        id: 1,
+        location: '-22.9068,-43.1729',
+        manufactureYear: '2023',
+        model: 'Model X',
+        number: 1,
+        status: LockStatus.NEW,
+      };
       mockRepo.findOneBy.mockResolvedValue(lock);
 
       const result = await service.findOne(1);
@@ -82,9 +106,16 @@ describe('LockService', () => {
 
   describe('update', () => {
     it('should update lock', async () => {
-      const lock = { id: 1, location: '-22.9068,-43.1729', manufactureYear: '2023', model: 'Model X', number: 1, status: LockStatus.NEW };
+      const lock = {
+        id: 1,
+        location: '-22.9068,-43.1729',
+        manufactureYear: '2023',
+        model: 'Model X',
+        number: 1,
+        status: LockStatus.NEW,
+      };
       const dto = { model: 'Model Y' };
-      
+
       mockRepo.findOneBy.mockResolvedValue(lock);
       mockRepo.save.mockResolvedValue({ ...lock, ...dto });
 
@@ -96,7 +127,9 @@ describe('LockService', () => {
     it('should throw NotFoundException if lock not found', async () => {
       mockRepo.findOneBy.mockResolvedValue(null);
 
-      await expect(service.update(999, { model: 'Test' })).rejects.toThrow(NotFoundException);
+      await expect(service.update(999, { model: 'Test' })).rejects.toThrow(
+        NotFoundException,
+      );
     });
   });
 
@@ -135,7 +168,11 @@ describe('LockService', () => {
     it('should lock bicycle', async () => {
       const lock = { id: 1, status: LockStatus.FREE, bicycleId: null };
       mockRepo.findOneBy.mockResolvedValue(lock);
-      mockRepo.save.mockResolvedValue({ ...lock, status: LockStatus.OCCUPIED, bicycleId: 5 });
+      mockRepo.save.mockResolvedValue({
+        ...lock,
+        status: LockStatus.OCCUPIED,
+        bicycleId: 5,
+      });
 
       const result = await service.lockBicycle(1, 5);
 
@@ -147,7 +184,9 @@ describe('LockService', () => {
       const lock = { id: 1, status: LockStatus.OCCUPIED, bicycleId: 3 };
       mockRepo.findOneBy.mockResolvedValue(lock);
 
-      await expect(service.lockBicycle(1, 5)).rejects.toThrow(BadRequestException);
+      await expect(service.lockBicycle(1, 5)).rejects.toThrow(
+        BadRequestException,
+      );
     });
   });
 
@@ -155,7 +194,11 @@ describe('LockService', () => {
     it('should unlock bicycle', async () => {
       const lock = { id: 1, status: LockStatus.OCCUPIED, bicycleId: 5 };
       mockRepo.findOneBy.mockResolvedValue(lock);
-      mockRepo.save.mockResolvedValue({ ...lock, status: LockStatus.FREE, bicycleId: null });
+      mockRepo.save.mockResolvedValue({
+        ...lock,
+        status: LockStatus.FREE,
+        bicycleId: null,
+      });
 
       const result = await service.unlockBicycle(1);
 

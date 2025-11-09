@@ -4,7 +4,6 @@ import { TotemService } from './totem.service';
 
 describe('TotemController', () => {
   let controller: TotemController;
-  let service: TotemService;
 
   const mockService = {
     create: jest.fn(),
@@ -26,7 +25,6 @@ describe('TotemController', () => {
     }).compile();
 
     controller = module.get<TotemController>(TotemController);
-    service = module.get<TotemService>(TotemService);
 
     jest.clearAllMocks();
   });
@@ -34,42 +32,52 @@ describe('TotemController', () => {
   it('should create totem', async () => {
     const dto = { location: '-22.9068,-43.1729', description: 'Main Station' };
     const expected = { id: 1, ...dto };
-    
-    mockService.create.mockResolvedValue(expected);
 
+    mockService.create.mockResolvedValue(expected);
     const result = await controller.create(dto);
 
-    expect(service.create).toHaveBeenCalledWith(dto);
+    expect(mockService.create).toHaveBeenCalledWith(dto);
     expect(result).toEqual(expected);
   });
 
   it('should find all totems', async () => {
-    const expected = [{ id: 1, location: '-22.9068,-43.1729', description: 'Main Station' }];
+    const expected = [
+      { id: 1, location: '-22.9068,-43.1729', description: 'Main Station' },
+    ];
     mockService.findAll.mockResolvedValue(expected);
 
     const result = await controller.findAll();
 
+    expect(mockService.findAll).toHaveBeenCalled();
     expect(result).toEqual(expected);
   });
 
   it('should find one totem', async () => {
-    const expected = { id: 1, location: '-22.9068,-43.1729', description: 'Main Station' };
+    const expected = {
+      id: 1,
+      location: '-22.9068,-43.1729',
+      description: 'Main Station',
+    };
     mockService.findOne.mockResolvedValue(expected);
 
     const result = await controller.findOne('1');
 
-    expect(service.findOne).toHaveBeenCalledWith(1);
+    expect(mockService.findOne).toHaveBeenCalledWith(1);
     expect(result).toEqual(expected);
   });
 
   it('should update totem', async () => {
     const dto = { description: 'Updated Station' };
-    const expected = { id: 1, location: '-22.9068,-43.1729', description: 'Updated Station' };
+    const expected = {
+      id: 1,
+      location: '-22.9068,-43.1729',
+      description: 'Updated Station',
+    };
     mockService.update.mockResolvedValue(expected);
 
     const result = await controller.update('1', dto);
 
-    expect(service.update).toHaveBeenCalledWith(1, dto);
+    expect(mockService.update).toHaveBeenCalledWith(1, dto);
     expect(result).toEqual(expected);
   });
 
@@ -78,6 +86,6 @@ describe('TotemController', () => {
 
     await controller.remove('1');
 
-    expect(service.remove).toHaveBeenCalledWith(1);
+    expect(mockService.remove).toHaveBeenCalledWith(1);
   });
 });

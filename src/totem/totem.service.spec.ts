@@ -1,13 +1,11 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
 import { TotemService } from './totem.service';
 import { Totem } from './totem.entity';
 import { NotFoundException } from '@nestjs/common';
 
 describe('TotemService', () => {
   let service: TotemService;
-  let repo: Repository<Totem>;
 
   const mockRepo = {
     create: jest.fn(),
@@ -29,15 +27,17 @@ describe('TotemService', () => {
     }).compile();
 
     service = module.get<TotemService>(TotemService);
-    repo = module.get<Repository<Totem>>(getRepositoryToken(Totem));
 
     jest.clearAllMocks();
   });
 
   describe('create', () => {
     it('should create totem', async () => {
-      const dto = { location: '-22.9068,-43.1729', description: 'Main Station' };
-      
+      const dto = {
+        location: '-22.9068,-43.1729',
+        description: 'Main Station',
+      };
+
       mockRepo.create.mockReturnValue(dto);
       mockRepo.save.mockResolvedValue({ id: 1, ...dto });
 
@@ -63,7 +63,11 @@ describe('TotemService', () => {
 
   describe('findOne', () => {
     it('should return totem if found', async () => {
-      const totem = { id: 1, location: '-22.9068,-43.1729', description: 'Main Station' };
+      const totem = {
+        id: 1,
+        location: '-22.9068,-43.1729',
+        description: 'Main Station',
+      };
       mockRepo.findOneBy.mockResolvedValue(totem);
 
       const result = await service.findOne(1);
@@ -80,9 +84,13 @@ describe('TotemService', () => {
 
   describe('update', () => {
     it('should update totem', async () => {
-      const totem = { id: 1, location: '-22.9068,-43.1729', description: 'Main Station' };
+      const totem = {
+        id: 1,
+        location: '-22.9068,-43.1729',
+        description: 'Main Station',
+      };
       const dto = { description: 'Updated Station' };
-      
+
       mockRepo.findOneBy.mockResolvedValue(totem);
       mockRepo.save.mockResolvedValue({ ...totem, ...dto });
 
@@ -94,13 +102,19 @@ describe('TotemService', () => {
     it('should throw NotFoundException if totem not found', async () => {
       mockRepo.findOneBy.mockResolvedValue(null);
 
-      await expect(service.update(999, { description: 'Test' })).rejects.toThrow(NotFoundException);
+      await expect(
+        service.update(999, { description: 'Test' }),
+      ).rejects.toThrow(NotFoundException);
     });
   });
 
   describe('remove', () => {
     it('should remove totem', async () => {
-      const totem = { id: 1, location: '-22.9068,-43.1729', description: 'Main Station' };
+      const totem = {
+        id: 1,
+        location: '-22.9068,-43.1729',
+        description: 'Main Station',
+      };
       mockRepo.findOneBy.mockResolvedValue(totem);
       mockRepo.remove.mockResolvedValue(totem);
 

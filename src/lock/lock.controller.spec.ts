@@ -5,7 +5,6 @@ import { LockStatus } from './lock.entity';
 
 describe('LockController', () => {
   let controller: LockController;
-  let service: LockService;
 
   const mockService = {
     create: jest.fn(),
@@ -31,50 +30,76 @@ describe('LockController', () => {
     }).compile();
 
     controller = module.get<LockController>(LockController);
-    service = module.get<LockService>(LockService);
 
     jest.clearAllMocks();
   });
 
   it('should create lock', async () => {
-    const dto = { location: '-22.9068,-43.1729', manufactureYear: '2023', model: 'Model X' };
+    const dto = {
+      location: '-22.9068,-43.1729',
+      manufactureYear: '2023',
+      model: 'Model X',
+    };
     const expected = { id: 1, ...dto, number: 1, status: LockStatus.NEW };
-    
-    mockService.create.mockResolvedValue(expected);
 
+    mockService.create.mockResolvedValue(expected);
     const result = await controller.create(dto);
 
-    expect(service.create).toHaveBeenCalledWith(dto);
+    expect(mockService.create).toHaveBeenCalledWith(dto);
     expect(result).toEqual(expected);
   });
 
   it('should find all locks', async () => {
-    const expected = [{ id: 1, location: '-22.9068,-43.1729', manufactureYear: '2023', model: 'Model X', number: 1, status: LockStatus.NEW }];
+    const expected = [
+      {
+        id: 1,
+        location: '-22.9068,-43.1729',
+        manufactureYear: '2023',
+        model: 'Model X',
+        number: 1,
+        status: LockStatus.NEW,
+      },
+    ];
     mockService.findAll.mockResolvedValue(expected);
 
     const result = await controller.findAll();
 
+    expect(mockService.findAll).toHaveBeenCalled();
     expect(result).toEqual(expected);
   });
 
   it('should find one lock', async () => {
-    const expected = { id: 1, location: '-22.9068,-43.1729', manufactureYear: '2023', model: 'Model X', number: 1, status: LockStatus.NEW };
+    const expected = {
+      id: 1,
+      location: '-22.9068,-43.1729',
+      manufactureYear: '2023',
+      model: 'Model X',
+      number: 1,
+      status: LockStatus.NEW,
+    };
     mockService.findOne.mockResolvedValue(expected);
 
     const result = await controller.findOne('1');
 
-    expect(service.findOne).toHaveBeenCalledWith(1);
+    expect(mockService.findOne).toHaveBeenCalledWith(1);
     expect(result).toEqual(expected);
   });
 
   it('should update lock', async () => {
     const dto = { model: 'Model Y' };
-    const expected = { id: 1, location: '-22.9068,-43.1729', manufactureYear: '2023', model: 'Model Y', number: 1, status: LockStatus.NEW };
-    mockService.update.mockResolvedValue(expected);
+    const expected = {
+      id: 1,
+      location: '-22.9068,-43.1729',
+      manufactureYear: '2023',
+      model: 'Model Y',
+      number: 1,
+      status: LockStatus.NEW,
+    };
 
+    mockService.update.mockResolvedValue(expected);
     const result = await controller.update('1', dto);
 
-    expect(service.update).toHaveBeenCalledWith(1, dto);
+    expect(mockService.update).toHaveBeenCalledWith(1, dto);
     expect(result).toEqual(expected);
   });
 
@@ -83,16 +108,29 @@ describe('LockController', () => {
 
     await controller.remove('1');
 
-    expect(service.remove).toHaveBeenCalledWith(1);
+    expect(mockService.remove).toHaveBeenCalledWith(1);
   });
 
-  it('should update lock status', async () => {
+  it('should update lock status to FREE on DESTRANCAR action', async () => {
     const expected = { id: 1, status: LockStatus.FREE };
     mockService.updateStatus.mockResolvedValue(expected);
 
-    const result = await controller.updateStatus('1', 'LIVRE');
+    const result = await controller.updateStatus('1', 'DESTRANCAR');
 
-    expect(service.updateStatus).toHaveBeenCalledWith(1, LockStatus.FREE);
+    expect(mockService.updateStatus).toHaveBeenCalledWith(1, LockStatus.FREE);
+    expect(result).toEqual(expected);
+  });
+
+  it('should update lock status to OCCUPIED on TRANCAR action', async () => {
+    const expected = { id: 1, status: LockStatus.OCCUPIED };
+    mockService.updateStatus.mockResolvedValue(expected);
+
+    const result = await controller.updateStatus('1', 'TRANCAR');
+
+    expect(mockService.updateStatus).toHaveBeenCalledWith(
+      1,
+      LockStatus.OCCUPIED,
+    );
     expect(result).toEqual(expected);
   });
 
@@ -102,7 +140,7 @@ describe('LockController', () => {
 
     const result = await controller.lockBicycle('1', { bicicleta: 5 });
 
-    expect(service.lockBicycle).toHaveBeenCalledWith(1, 5);
+    expect(mockService.lockBicycle).toHaveBeenCalledWith(1, 5);
     expect(result).toEqual(expected);
   });
 
@@ -112,7 +150,7 @@ describe('LockController', () => {
 
     const result = await controller.unlockBicycle('1');
 
-    expect(service.unlockBicycle).toHaveBeenCalledWith(1);
+    expect(mockService.unlockBicycle).toHaveBeenCalledWith(1);
     expect(result).toEqual(expected);
   });
 
@@ -121,7 +159,7 @@ describe('LockController', () => {
 
     const result = await controller.getBicycle('1');
 
-    expect(service.getBicycle).toHaveBeenCalledWith(1);
+    expect(mockService.getBicycle).toHaveBeenCalledWith(1);
     expect(result).toBe(5);
   });
 });
