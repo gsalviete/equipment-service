@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Totem } from './totem.entity';
 import { TotemService } from './totem.service';
@@ -7,7 +7,11 @@ import { LockModule } from '../lock/lock.module';
 import { BicycleModule } from '../bicycle/bicycle.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Totem]), LockModule, BicycleModule],
+  imports: [
+    TypeOrmModule.forFeature([Totem]),
+    forwardRef(() => LockModule),
+    BicycleModule,
+  ],
   controllers: [TotemController],
   providers: [TotemService],
   exports: [TotemService],

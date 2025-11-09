@@ -5,9 +5,14 @@ import { LockService } from './lock.service';
 import { LockNetworkService } from './lock-network.service';
 import { LockController } from './lock.controller';
 import { BicycleModule } from '../bicycle/bicycle.module';
+import { TotemModule } from '../totem/totem.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Lock]), forwardRef(() => BicycleModule)],
+  imports: [
+    TypeOrmModule.forFeature([Lock]),
+    forwardRef(() => BicycleModule),
+    forwardRef(() => TotemModule),
+  ],
   controllers: [LockController],
   providers: [LockService, LockNetworkService],
   exports: [LockService, LockNetworkService],
