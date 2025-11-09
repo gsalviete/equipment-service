@@ -1,6 +1,8 @@
 import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BicycleModule } from './bicycle/bicycle.module';
+import { LockModule } from './lock/lock.module';
+import { TotemModule } from './totem/totem.module';
 
 @Module({
   imports: [
@@ -15,6 +17,8 @@ import { BicycleModule } from './bicycle/bicycle.module';
       synchronize: true,
     }),
     BicycleModule,
+    LockModule,
+    TotemModule,
   ],
 })
 export class AppModule {}
