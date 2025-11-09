@@ -95,4 +95,10 @@ export class LockService {
   async findByTotemId(totemId: number): Promise<Lock[]> {
     return this.repo.find({ where: { totemId } });
   }
+
+  async updateTotemAssociation(id: number, totemId: number | null): Promise<Lock> {
+    const lock = await this.findOne(id);
+    lock.totemId = totemId;
+    return this.repo.save(lock);
+  }
 }

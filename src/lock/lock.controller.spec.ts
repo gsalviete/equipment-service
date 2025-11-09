@@ -1,6 +1,7 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { LockController } from './lock.controller';
 import { LockService } from './lock.service';
+import { LockNetworkService } from './lock-network.service';
 import { LockStatus } from './lock.entity';
 
 describe('LockController', () => {
@@ -12,10 +13,13 @@ describe('LockController', () => {
     findOne: jest.fn(),
     update: jest.fn(),
     remove: jest.fn(),
-    updateStatus: jest.fn(),
     lockBicycle: jest.fn(),
     unlockBicycle: jest.fn(),
-    getBicycle: jest.fn(),
+  };
+
+  const mockNetworkService = {
+    integrateLock: jest.fn(),
+    removeLock: jest.fn(),
   };
 
   beforeEach(async () => {
@@ -25,6 +29,10 @@ describe('LockController', () => {
         {
           provide: LockService,
           useValue: mockService,
+        },
+        {
+          provide: LockNetworkService,
+          useValue: mockNetworkService,
         },
       ],
     }).compile();
@@ -111,34 +119,11 @@ describe('LockController', () => {
     expect(mockService.remove).toHaveBeenCalledWith(1);
   });
 
-  it('should update lock status to FREE on DESTRANCAR action', async () => {
-    const expected = { id: 1, status: LockStatus.FREE };
-    mockService.updateStatus.mockResolvedValue(expected);
-
-    const result = await controller.updateStatus('1', 'DESTRANCAR');
-
-    expect(mockService.updateStatus).toHaveBeenCalledWith(1, LockStatus.FREE);
-    expect(result).toEqual(expected);
-  });
-
-  it('should update lock status to OCCUPIED on TRANCAR action', async () => {
-    const expected = { id: 1, status: LockStatus.OCCUPIED };
-    mockService.updateStatus.mockResolvedValue(expected);
-
-    const result = await controller.updateStatus('1', 'TRANCAR');
-
-    expect(mockService.updateStatus).toHaveBeenCalledWith(
-      1,
-      LockStatus.OCCUPIED,
-    );
-    expect(result).toEqual(expected);
-  });
-
   it('should lock bicycle', async () => {
     const expected = { id: 1, status: LockStatus.OCCUPIED, bicycleId: 5 };
     mockService.lockBicycle.mockResolvedValue(expected);
 
-    const result = await controller.lockBicycle('1', { bicicleta: 5 });
+    const result = await controller.lockBicycle('1', { idBicicleta: 5 });
 
     expect(mockService.lockBicycle).toHaveBeenCalledWith(1, 5);
     expect(result).toEqual(expected);
@@ -154,12 +139,33 @@ describe('LockController', () => {
     expect(result).toEqual(expected);
   });
 
-  it('should get bicycle from lock', async () => {
-    mockService.getBicycle.mockResolvedValue(5);
+  it('should integrate lock into network', async () => {
+    mockNetworkService.integrateLock.mockResolvedValue(undefined);
 
-    const result = await controller.getBicycle('1');
+    await controller.integrateLock({
+      idTranca: 1,
+      idTotem: 10,
+      idFuncionario: 100,
+    });
 
-    expect(mockService.getBicycle).toHaveBeenCalledWith(1);
-    expect(result).toBe(5);
+    expect(mockNetworkService.integrateLock).toHaveBeenCalledWith(1, 10, 100);
+  });
+
+  it('should remove lock from network', async () => {
+    mockNetworkService.removeLock.mockResolvedValue(undefined);
+
+    await controller.removeLock({
+      idTranca: 1,
+      idTotem: 10,
+      idFuncionario: 100,
+      statusAcaoReparador: 'EM_REPARO',
+    });
+
+    expect(mockNetworkService.removeLock).toHaveBeenCalledWith(
+      1,
+      10,
+      100,
+      'EM_REPARO',
+    );
   });
 });
