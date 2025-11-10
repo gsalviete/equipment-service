@@ -9,7 +9,7 @@ import { UpdateTotemDto } from './dto/update-totem.dto';
 export class TotemService {
   constructor(
     @InjectRepository(Totem)
-    private repo: Repository<Totem>,
+    private readonly repo: Repository<Totem>,
   ) {}
 
   async create(dto: CreateTotemDto): Promise<Totem> {
