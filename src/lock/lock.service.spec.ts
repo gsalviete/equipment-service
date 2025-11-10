@@ -224,4 +224,59 @@ describe('LockService', () => {
       await expect(service.getBicycle(1)).rejects.toThrow(NotFoundException);
     });
   });
+  describe('updateTotemAssociation', () => {
+    it('should associate lock with totem', async () => {
+      const lock = {
+        id: 1,
+        number: 1,
+        location: '-22.9068,-43.1729',
+        manufactureYear: '2023',
+        model: 'Model X',
+        status: LockStatus.NEW,
+        bicycleId: null,
+        totemId: null,
+      };
+      const expected = { ...lock, totemId: 10 };
+  
+      mockRepo.findOneBy.mockResolvedValue(lock);
+      mockRepo.save.mockResolvedValue(expected);
+  
+      const result = await service.updateTotemAssociation(1, 10);
+  
+      expect(mockRepo.findOneBy).toHaveBeenCalledWith({ id: 1 });
+      expect(mockRepo.save).toHaveBeenCalledWith({ ...lock, totemId: 10 });
+      expect(result).toEqual(expected);
+    });
+  
+    it('should disassociate lock from totem', async () => {
+      const lock = {
+        id: 1,
+        number: 1,
+        location: '-22.9068,-43.1729',
+        manufactureYear: '2023',
+        model: 'Model X',
+        status: LockStatus.FREE,
+        bicycleId: null,
+        totemId: 10,
+      };
+      const expected = { ...lock, totemId: null };
+  
+      mockRepo.findOneBy.mockResolvedValue(lock);
+      mockRepo.save.mockResolvedValue(expected);
+  
+      const result = await service.updateTotemAssociation(1, null);
+  
+      expect(mockRepo.findOneBy).toHaveBeenCalledWith({ id: 1 });
+      expect(mockRepo.save).toHaveBeenCalledWith({ ...lock, totemId: null });
+      expect(result).toEqual(expected);
+    });
+  
+    it('should throw NotFoundException if lock not found', async () => {
+      mockRepo.findOneBy.mockResolvedValue(null);
+  
+      await expect(service.updateTotemAssociation(999, 10)).rejects.toThrow(
+        NotFoundException,
+      );
+    });
+  });
 });
