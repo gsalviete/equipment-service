@@ -14,9 +14,8 @@ export class BicycleNetworkService {
   async integrateBicycle(
     bicycleId: number,
     lockId: number,
-    _employeeId: number, // <-- CORREÇÃO AQUI
+    _employeeId: number,
   ): Promise<void> {
-    // Validar bicicleta
     const bicycle = await this.bicycleService.findOne(bicycleId);
 
     if (
@@ -26,39 +25,38 @@ export class BicycleNetworkService {
       throw new BadRequestException(
         'Bicycle must have status NEW or IN_REPAIR',
       );
-    } // Validar tranca
+    } 
 
     const lock = await this.lockService.findOne(lockId);
 
     if (lock.status !== LockStatus.FREE) {
       throw new BadRequestException('Lock must be FREE');
-    } // Atualizar status da bicicleta
+    } 
 
-    await this.bicycleService.updateStatus(bicycleId, BicycleStatus.AVAILABLE); // Trancar a bicicleta
+    await this.bicycleService.updateStatus(bicycleId, BicycleStatus.AVAILABLE); 
 
-    await this.lockService.lockBicycle(lockId, bicycleId); // TODO: Enviar email (mock - não implementado nesta entrega)
+    await this.lockService.lockBicycle(lockId, bicycleId); // Email notification not implemented in this delivery
   }
 
   async removeBicycle(
     bicycleId: number,
     lockId: number,
-    _employeeId: number, // <-- CORREÇÃO AQUI
+    _employeeId: number,
     action: string,
   ): Promise<void> {
-    // Validar bicicleta
     const bicycle = await this.bicycleService.findOne(bicycleId);
 
     if (bicycle.status !== BicycleStatus.REPAIR_REQUESTED) {
       throw new BadRequestException(
         'Bicycle must have status REPAIR_REQUESTED',
       );
-    } // Validar tranca
+    }
 
     const lock = await this.lockService.findOne(lockId);
 
     if (lock.bicycleId !== bicycleId) {
       throw new BadRequestException('Lock does not have this bicycle');
-    } // Mapear ação para status
+    } 
 
     const statusMap: Record<string, BicycleStatus> = {
       EM_REPARO: BicycleStatus.IN_REPAIR,
@@ -68,10 +66,10 @@ export class BicycleNetworkService {
     const newStatus = statusMap[action.toUpperCase()];
     if (!newStatus) {
       throw new BadRequestException('Invalid action');
-    } // Atualizar status da bicicleta
+    }
 
-    await this.bicycleService.updateStatus(bicycleId, newStatus); // Destrancar
+    await this.bicycleService.updateStatus(bicycleId, newStatus);
 
-    await this.lockService.unlockBicycle(lockId); // TODO: Enviar email (mock - não implementado nesta entrega)
+    await this.lockService.unlockBicycle(lockId); // Email notification not implemented in this delivery
   }
 }

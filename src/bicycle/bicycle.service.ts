@@ -13,7 +13,7 @@ import { UpdateBicycleDto } from './dto/update-bicycle.dto';
 export class BicycleService {
   constructor(
     @InjectRepository(Bicycle)
-    private repo: Repository<Bicycle>,
+    private readonly repo: Repository<Bicycle>,
   ) {}
 
   async create(dto: CreateBicycleDto): Promise<Bicycle> {

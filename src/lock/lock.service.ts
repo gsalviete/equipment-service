@@ -13,7 +13,7 @@ import { UpdateLockDto } from './dto/update-lock.dto';
 export class LockService {
   constructor(
     @InjectRepository(Lock)
-    private repo: Repository<Lock>,
+    private readonly repo: Repository<Lock>,
   ) {}
 
   async create(dto: CreateLockDto): Promise<Lock> {

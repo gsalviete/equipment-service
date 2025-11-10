@@ -15,7 +15,6 @@ export class LockNetworkService {
     totemId: number,
     _employeeId: number,
   ): Promise<void> {
-    // Validar tranca
     const lock = await this.lockService.findOne(lockId);
 
     if (
@@ -25,16 +24,13 @@ export class LockNetworkService {
       throw new BadRequestException('Lock must have status NEW or IN_REPAIR');
     }
 
-    // Validar totem
     await this.totemService.findOne(totemId);
 
-    // Atualizar status da tranca para LIVRE
     await this.lockService.updateStatus(lockId, LockStatus.FREE);
 
-    // Associar tranca ao totem
     await this.lockService.updateTotemAssociation(lockId, totemId);
 
-    // TODO: Enviar email (mock - não implementado nesta entrega)
+    // Email notification not implemented in this delivery
   }
 
   async removeLock(
@@ -43,14 +39,12 @@ export class LockNetworkService {
     _employeeId: number,
     action: string,
   ): Promise<void> {
-    // Validar tranca
     const lock = await this.lockService.findOne(lockId);
 
     if (lock.bicycleId !== null) {
       throw new BadRequestException('Lock must not have any bicycle');
     }
 
-    // Mapear ação para status
     const statusMap: Record<string, LockStatus> = {
       EM_REPARO: LockStatus.IN_REPAIR,
       APOSENTADA: LockStatus.RETIRED,
@@ -61,12 +55,10 @@ export class LockNetworkService {
       throw new BadRequestException('Invalid action');
     }
 
-    // Atualizar status da tranca
     await this.lockService.updateStatus(lockId, newStatus);
 
-    // Desassociar do totem
     await this.lockService.updateTotemAssociation(lockId, null);
 
-    // TODO: Enviar email (mock - não implementado nesta entrega)
+    // Email notification not implemented in this delivery
   }
 }
