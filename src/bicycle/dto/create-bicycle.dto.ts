@@ -1,6 +1,10 @@
-import { IsString, IsNotEmpty } from 'class-validator';
+import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
 
 export class CreateBicycleDto {
+  @IsNumber()
+  @IsNotEmpty()
+  number: number;
+
   @IsString()
   @IsNotEmpty()
   brand: string;
