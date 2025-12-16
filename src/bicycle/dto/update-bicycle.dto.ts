@@ -3,17 +3,17 @@ import { IsString, IsOptional, IsNumber } from 'class-validator';
 export class UpdateBicycleDto {
   @IsNumber()
   @IsOptional()
-  number?: number;
+  numero?: number;
 
   @IsString()
   @IsOptional()
-  brand?: string;
+  marca?: string;
 
   @IsString()
   @IsOptional()
-  model?: string;
+  modelo?: string;
 
   @IsString()
   @IsOptional()
-  year?: string;
+  ano?: string;
 }

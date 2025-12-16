@@ -1,19 +1,21 @@
-import { IsString, IsNotEmpty, IsNumber } from 'class-validator';
+import { IsString, IsNotEmpty, IsOptional, IsNumber } from 'class-validator';
 
 export class CreateBicycleDto {
+  // Segundo a documentação, o campo 'numero' é gerado automaticamente pelo sistema
+  // Portanto, é opcional no DTO de criação
   @IsNumber()
-  @IsNotEmpty()
-  number: number;
+  @IsOptional()
+  numero?: number;
 
   @IsString()
   @IsNotEmpty()
-  brand: string;
+  marca: string;
 
   @IsString()
   @IsNotEmpty()
-  model: string;
+  modelo: string;
 
   @IsString()
   @IsNotEmpty()
-  year: string;
+  ano: string;
 }
