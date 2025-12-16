@@ -196,7 +196,9 @@ describe('BicycleService', () => {
       const result = await service.findByIds([1, 2]);
 
       expect(result).toEqual(bicycles);
-      expect(mockRepo.findBy).toHaveBeenCalledWith({ id: expect.anything() });
+      expect(mockRepo.findBy).toHaveBeenCalledWith({
+        id: expect.any(Object) as number[],
+      });
     });
   });
 });

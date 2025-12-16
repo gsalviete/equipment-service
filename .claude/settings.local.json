@@ -1,9 +1,0 @@
-{
-  "permissions": {
-    "allow": [
-      "Bash(npm test:*)",
-      "Bash(dir /s /b *.json)",
-      "Bash(findstr:*)"
-    ]
-  }
-}

@@ -187,7 +187,10 @@ describe('LockController', () => {
       const expected = { id: 1, status: LockStatus.OCCUPIED };
       mockService.lockBicycle.mockResolvedValue(expected);
 
-      const result = await controller.updateStatus('1', 'TRANCAR');
+      const result = (await controller.updateStatus(
+        '1',
+        'TRANCAR',
+      )) as typeof expected;
 
       expect(mockService.lockBicycle).toHaveBeenCalledWith(1, undefined);
       expect(result).toEqual(expected);
@@ -197,7 +200,10 @@ describe('LockController', () => {
       const expected = { id: 1, status: LockStatus.FREE };
       mockService.unlockBicycle.mockResolvedValue(expected);
 
-      const result = await controller.updateStatus('1', 'DESTRANCAR');
+      const result = (await controller.updateStatus(
+        '1',
+        'DESTRANCAR',
+      )) as typeof expected;
 
       expect(mockService.unlockBicycle).toHaveBeenCalledWith(1);
       expect(result).toEqual(expected);
@@ -209,7 +215,9 @@ describe('LockController', () => {
         fail('Expected BadRequestException to be thrown');
       } catch (error) {
         expect(error).toBeInstanceOf(BadRequestException);
-        expect(error.message).toContain('Invalid action: INVALID');
+        expect((error as BadRequestException).message).toContain(
+          'Invalid action: INVALID',
+        );
       }
     });
   });

@@ -3,12 +3,12 @@ import { ExternalClient } from './external.client';
 import { HttpService } from '@nestjs/axios';
 import { ConfigService } from '@nestjs/config';
 import { of, throwError } from 'rxjs';
-import { AxiosResponse, AxiosError } from 'axios';
+import { AxiosResponse, AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 describe('ExternalClient', () => {
   let client: ExternalClient;
-  let httpService: HttpService;
-  let configService: ConfigService;
+  let _httpService: HttpService;
+  let _configService: ConfigService;
 
   const mockHttpService = {
     post: jest.fn(),
@@ -36,8 +36,8 @@ describe('ExternalClient', () => {
     }).compile();
 
     client = module.get<ExternalClient>(ExternalClient);
-    httpService = module.get<HttpService>(HttpService);
-    configService = module.get<ConfigService>(ConfigService);
+    _httpService = module.get<HttpService>(HttpService);
+    _configService = module.get<ConfigService>(ConfigService);
   });
 
   it('should be defined', () => {
@@ -64,7 +64,9 @@ describe('ExternalClient', () => {
 
       const customClient = module.get<ExternalClient>(ExternalClient);
       expect(customClient).toBeDefined();
-      expect(mockConfigService.get).toHaveBeenCalledWith('EXTERNAL_SERVICE_URL');
+      expect(mockConfigService.get).toHaveBeenCalledWith(
+        'EXTERNAL_SERVICE_URL',
+      );
     });
 
     it('should initialize with default URL when config is not provided', async () => {
@@ -100,12 +102,16 @@ describe('ExternalClient', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as any,
+        config: {} as InternalAxiosRequestConfig,
       };
 
       mockHttpService.post.mockReturnValue(of(mockResponse));
 
-      const result = await client.sendEmail(mockEmail, mockSubject, mockMessage);
+      const result = (await client.sendEmail(
+        mockEmail,
+        mockSubject,
+        mockMessage,
+      )) as { success: boolean } | null;
 
       expect(result).toEqual({ success: true });
       expect(mockHttpService.post).toHaveBeenCalledWith(
@@ -122,14 +128,18 @@ describe('ExternalClient', () => {
       const mockError: Partial<AxiosError> = {
         message: 'Network Error',
         name: 'AxiosError',
-        config: {} as any,
+        config: {} as InternalAxiosRequestConfig,
         isAxiosError: true,
         toJSON: () => ({}),
       };
 
       mockHttpService.post.mockReturnValue(throwError(() => mockError));
 
-      const result = await client.sendEmail(mockEmail, mockSubject, mockMessage);
+      const result = (await client.sendEmail(
+        mockEmail,
+        mockSubject,
+        mockMessage,
+      )) as { success: boolean } | null;
 
       expect(result).toBeNull();
       expect(mockHttpService.post).toHaveBeenCalledWith(
@@ -149,7 +159,7 @@ describe('ExternalClient', () => {
       const mockError: Partial<AxiosError> = {
         message: 'Connection timeout',
         name: 'AxiosError',
-        config: {} as any,
+        config: {} as InternalAxiosRequestConfig,
         isAxiosError: true,
         toJSON: () => ({}),
       };
@@ -174,7 +184,7 @@ describe('ExternalClient', () => {
         status: 200,
         statusText: 'OK',
         headers: {},
-        config: {} as any,
+        config: {} as InternalAxiosRequestConfig,
       };
 
       mockHttpService.post.mockReturnValue(of(mockResponse));
