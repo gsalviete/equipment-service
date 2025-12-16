@@ -27,9 +27,7 @@ export class AppService {
     await this.totemRepo.delete({});
 
     // Reset sequences to start from 1
-    await this.totemRepo.query(
-      `ALTER SEQUENCE totems_id_seq RESTART WITH 1`,
-    );
+    await this.totemRepo.query(`ALTER SEQUENCE totems_id_seq RESTART WITH 1`);
     await this.bicycleRepo.query(
       `ALTER SEQUENCE bicycles_id_seq RESTART WITH 1`,
     );
@@ -60,7 +58,7 @@ export class AppService {
       status: BicycleStatus.REPAIR_REQUESTED,
     });
 
-    const bicycle3 = await this.bicycleRepo.save({
+    const _bicycle3 = await this.bicycleRepo.save({
       marca: 'Caloi',
       modelo: 'Caloi',
       ano: '2020',
@@ -68,7 +66,7 @@ export class AppService {
       status: BicycleStatus.IN_USE,
     });
 
-    const bicycle4 = await this.bicycleRepo.save({
+    const _bicycle4 = await this.bicycleRepo.save({
       marca: 'Caloi',
       modelo: 'Caloi',
       ano: '2020',
