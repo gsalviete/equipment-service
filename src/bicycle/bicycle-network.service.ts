@@ -27,13 +27,13 @@ export class BicycleNetworkService {
       throw new BadRequestException(
         'Bicycle must have status NEW or IN_REPAIR',
       );
-    } 
+    }
 
     const lock = await this.lockService.findOne(lockId);
 
     if (lock.status !== LockStatus.FREE) {
       throw new BadRequestException('Lock must be FREE');
-    } 
+    }
 
     await this.bicycleService.updateStatus(bicycleId, BicycleStatus.AVAILABLE);
 
@@ -65,7 +65,7 @@ export class BicycleNetworkService {
 
     if (lock.bicycleId !== bicycleId) {
       throw new BadRequestException('Lock does not have this bicycle');
-    } 
+    }
 
     const statusMap: Record<string, BicycleStatus> = {
       EM_REPARO: BicycleStatus.IN_REPAIR,

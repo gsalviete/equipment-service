@@ -26,7 +26,10 @@ import { ExternalClient } from './clients/external.client';
       url: process.env.DATABASE_URL,
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: true, // Temporarily true to create tables in production
-      ssl: process.env.NODE_ENV === 'production' ? { rejectUnauthorized: false } : false,
+      ssl:
+        process.env.NODE_ENV === 'production'
+          ? { rejectUnauthorized: false }
+          : false,
     }),
     TypeOrmModule.forFeature([Bicycle, Lock, Totem]),
     BicycleModule,

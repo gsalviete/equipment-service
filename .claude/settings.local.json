@@ -1,7 +1,9 @@
 {
   "permissions": {
     "allow": [
-      "Bash(pnpm test:cov:*)"
+      "Bash(npm test:*)",
+      "Bash(dir /s /b *.json)",
+      "Bash(findstr:*)"
     ]
   }
 }
