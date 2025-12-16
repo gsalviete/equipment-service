@@ -92,9 +92,13 @@ export class LockService {
   }
 
   private async generateNumber(): Promise<number> {
-    const lastLock = await this.repo.findOne({
+    const lastLocks = await this.repo.find({
       order: { number: 'DESC' },
+      take: 1,
     });
+
+    const lastLock = lastLocks && lastLocks.length > 0 ? lastLocks[0] : null;
+
     return lastLock ? lastLock.number + 1 : 1;
   }
 
