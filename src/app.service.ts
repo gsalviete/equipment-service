@@ -31,8 +31,11 @@ export class AppService {
         `ALTER SEQUENCE bicycles_id_seq RESTART WITH 1`,
       );
       await this.lockRepo.query(`ALTER SEQUENCE locks_id_seq RESTART WITH 1`);
-    } catch (e) {
-      console.log('Aviso: Não foi possível resetar sequencias (pode ser normal em alguns bancos):', e.message);
+    } catch (e: unknown) {
+      console.log(
+        'Aviso: Não foi possível resetar sequencias (pode ser normal em alguns bancos):',
+        e instanceof Error ? e.message : String(e),
+      );
     }
 
     // Create Totem
